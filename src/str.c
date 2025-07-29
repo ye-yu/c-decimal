@@ -1,6 +1,48 @@
 #include "b_dec_str.h"
 #include "b_dec_div_10.h"
 
+int bring_forward(char *str, const size_t size)
+{
+    for (size_t i = 0, swap_at = 0; i < size - 1; i++)
+    {
+        if (str[i] == '\0')
+        {
+            if (swap_at != 0)
+            {
+                break;
+            }
+            continue;
+        }
+
+        if (swap_at == i)
+        {
+            break;
+        }
+
+        str[swap_at] = str[i];
+        str[i] = '\0';
+        swap_at++;
+    }
+
+    return 0;
+}
+
+int put_from_last(char *str, const size_t size, const size_t at, const char c)
+{
+    if (size == 0)
+    {
+        return 1; // Error: size is zero
+    }
+
+    if (at >= size - 1)
+    {
+        return 1; // Error: at is out of bounds
+    }
+
+    str[size - 2 - at] = c;
+    return 0;
+}
+
 const char char_map[] = "0123456789";
 
 /**
@@ -115,47 +157,5 @@ int b_dec_to_str(const b_dec dec, char *str, const size_t size)
     }
 
     bring_forward(str, size);
-    return 0;
-}
-
-int bring_forward(char *str, const size_t size)
-{
-    for (size_t i = 0, swap_at = 0; i < size - 1; i++)
-    {
-        if (str[i] == '\0')
-        {
-            if (swap_at != 0)
-            {
-                break;
-            }
-            continue;
-        }
-
-        if (swap_at == i)
-        {
-            break;
-        }
-
-        str[swap_at] = str[i];
-        str[i] = '\0';
-        swap_at++;
-    }
-
-    return 0;
-}
-
-int put_from_last(char *str, const size_t size, const size_t at, const char c)
-{
-    if (size == 0)
-    {
-        return 1; // Error: size is zero
-    }
-
-    if (at >= size - 1)
-    {
-        return 1; // Error: at is out of bounds
-    }
-
-    str[size - 2 - at] = c;
     return 0;
 }

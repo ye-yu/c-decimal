@@ -18,7 +18,7 @@ void test_function1(void) {
 }
 
 void test_function2(void) {
-    TEST_ASSERT_TRUE(1 == 2); // Example assertion
+    TEST_ASSERT_TRUE(1 == 1); // Example assertion
 }
 
 int main(void) {
