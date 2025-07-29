@@ -48,16 +48,14 @@ $(BUILD_DIR)/unity.o:
 	@echo "Compiling Unity test framework..."
 	$(CC) $(CFLAGS) -c $(TEST_DIR)/unity/src/unity.c -o $(BUILD_DIR)/unity.o
 
-%_test: $(BUILD_DIR)/%_test.o $(BUILD_DIR)/unity.o
+%_test: $(BUILD_DIR)/%_test.o $(BUILD_DIR)/unity.o $(OBJS)
 	@echo "Running single test..."
-	$(CC) $< $(BUILD_DIR)/unity.o -o $<.test.exe $(LDFLAGS)
-	./$<.test.exe > $<.test.log 2> $<.test.err || \
-	{ echo "Test failed. Check $<.test.log and $<.test.err for details."; exit 0; }
-	@cat $<.test.log $<.test.err
+	$(CC) $< $(BUILD_DIR)/unity.o $(OBJS) -o $<.test.exe $(LDFLAGS)
+	./$<.test.exe
 
-%_test.exe: $(BUILD_DIR)/%_test.o $(BUILD_DIR)/unity.o
+%_test.exe: $(BUILD_DIR)/%_test.o $(BUILD_DIR)/unity.o $(OBJS)
 	@echo "Running single test..."
-	$(CC) $< $(BUILD_DIR)/unity.o -o $(TEST_TARGET) $(LDFLAGS)
+	$(CC) $< $(BUILD_DIR)/unity.o $(OBJS) -o $(TEST_TARGET) $(LDFLAGS)
 
 TEST_OBJS = $(patsubst $(TEST_DIR)/%_test.c, %_test, $(TESTS))
 test: $(TEST_OBJS)
