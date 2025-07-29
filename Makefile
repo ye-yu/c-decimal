@@ -40,8 +40,7 @@ clean:
 	rm -rf $(BUILD_DIR) $(TARGET)
 
 reset:
-	@git rm -r --cached .
-	@git add .
+	@git clean -dXf
 
 
 $(BUILD_DIR)/unity.o:
