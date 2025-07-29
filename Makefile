@@ -39,6 +39,10 @@ $(BUILD_DIR)/%_test.o: $(TEST_DIR)/%_test.c
 clean:
 	rm -rf $(BUILD_DIR) $(TARGET)
 
+reset:
+	@git rm -r --cached .
+	@git add .
+
 
 $(BUILD_DIR)/unity.o:
 	@mkdir -p $(BUILD_DIR) # Create build directory if it doesn't exist
