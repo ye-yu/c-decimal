@@ -11,9 +11,9 @@ void tearDown(void)
     printf("Tearing down tests...\n");
 }
 
-int main()
+void main_test(void)
 {
-    UNITY_BEGIN();
+    TEST_IGNORE_MESSAGE("No need to run this test, it is just an example.");
     srand(1);
     b_uint array[2] = {0, 0};
     for (size_t i = 0; i < 100; i++)
@@ -45,5 +45,11 @@ int main()
         printf("Number of trailing zeroes:      %d\n", (int)z);
         printf("\n");
     }
+}
+
+int main()
+{
+    UNITY_BEGIN();
+    RUN_TEST(main_test);
     return UNITY_END();
 }
