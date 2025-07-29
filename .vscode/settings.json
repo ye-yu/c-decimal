@@ -8,7 +8,14 @@
         "unity_internals.h": "c",
         "b_dec_print.h": "c",
         "b_dec_trailing.h": "c",
-        "b_dec_split.h": "c"
+        "b_dec_split.h": "c",
+        "b_dec_div_10.h": "c",
+        "b_dec_carry.h": "c",
+        "str_test.h": "c",
+        "b_dec_copy.h": "c",
+        "b_dec_mul.h": "c",
+        "b_dec_str.h": "c",
+        "b_dec_rand.h": "c"
     },
     "makefile.makefilePath": "${workspaceFolder}/Makefile",
     "makefile.makePath": "C:\\msys64\\usr\\bin",

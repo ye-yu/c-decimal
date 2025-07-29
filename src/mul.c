@@ -1,4 +1,7 @@
 #include "b_dec_mul.h"
+#include "b_dec_split.h"
+#include "b_dec_zero.h"
+#include "b_dec_carry.h"
 
 /**
  * @param a First operand, normalized

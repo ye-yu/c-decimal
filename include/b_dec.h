@@ -8,5 +8,6 @@
 #include "b_dec_print.h"
 #include "b_dec_rand.h"
 #include "b_dec_split.h"
+#include "b_dec_str.h"
 #include "b_dec_trailing.h"
 #include "b_dec_zero.h"

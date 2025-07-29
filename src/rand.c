@@ -1,4 +1,5 @@
 #include "b_dec_rand.h"
+#include "b_dec_carry.h"
 
 b_uint rand_b_uint()
 {
