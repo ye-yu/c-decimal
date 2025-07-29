@@ -3,12 +3,10 @@
         {
             "name": "GCC",
             "includePath": [
-                "${workspaceFolder}/src/**",
-                "${workspaceFolder}/include/**",
-                "${workspaceFolder}/tests/**"
+                "${workspaceFolder}/**"
             ],
-            "intelliSenseMode": "windows-msvc-x64",
-            "compilerPath": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx86\\x86\\cl.exe",
+            "intelliSenseMode": "${default}",
+            "compilerPath": "C:/msys64/ucrt64/bin/gcc.exe",
             "cStandard": "c17",
             "cppStandard": "c++17"
         }
