@@ -1,0 +1,21 @@
+{
+    "files.associations": {
+        "b_dec.h": "c",
+        "b_dec_defines.h": "c",
+        "stdint.h": "c",
+        "b_dec_zero.h": "c",
+        "unity.h": "c",
+        "unity_internals.h": "c",
+        "b_dec_print.h": "c",
+        "b_dec_trailing.h": "c"
+    },
+    "makefile.makefilePath": "${workspaceFolder}/Makefile",
+    "makefile.makePath": "C:\\msys64\\usr\\bin",
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "c:\\Users\\kiki\\Documents\\git-items\\c-decimal",
+            "binaryPath": "c:\\Users\\kiki\\Documents\\git-items\\c-decimal\\my_program",
+            "binaryArgs": []
+        }
+    ]
+}

@@ -4,7 +4,8 @@
             "name": "GCC",
             "includePath": [
                 "${workspaceFolder}/src/**",
-                "${workspaceFolder}/include/**"
+                "${workspaceFolder}/include/**",
+                "${workspaceFolder}/tests/**"
             ],
             "intelliSenseMode": "windows-msvc-x64",
             "compilerPath": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx86\\x86\\cl.exe",
