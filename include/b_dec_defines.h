@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <time.h>
 
-
 #define CHUNKSIZE 4
 #define CHUNKSIZE_DOUBLE 8
 #define BITSIZE 32
@@ -20,6 +19,7 @@ typedef struct
 {
     // sign: 0 for positive, 1 for negative
     uint8_t sign;
+    // precision in base10
     b_uint prec;
     // most significant bit is carry
     b_uint mag[CHUNKSIZE];

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "b_dec_carry.h"
+#include "b_dec_compare.h"
 #include "b_dec_copy.h"
 #include "b_dec_defines.h"
 #include "b_dec_div_10.h"

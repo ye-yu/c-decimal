@@ -35,12 +35,30 @@ int mul(const b_dec a, const b_dec b, b_dec *r)
         }
     }
 
-    r->sign = a.sign ^ b.sign; // XOR for sign
-    r->prec = a.prec + b.prec;
+    result.sign = a.sign ^ b.sign; // XOR for sign
+    result.prec = a.prec + b.prec;
+
+    // for the first four CHUNKSIZE elements, if non-zero, we have an overflow
+    // note: result_mag is double the size of CHUNKSIZE
+    for (size_t i = 0; i < CHUNKSIZE; i++)
+    {
+        if (result_mag[i] != 0)
+        {
+            return 1;
+        }
+    }
 
     // Copy the result into the b_dec structure
     for (size_t i = 0; i < CHUNKSIZE; i++)
     {
+        result.mag[i] = result_mag[i + CHUNKSIZE];
+    }
+
+    r->sign = result.sign;
+    r->prec = result.prec;
+    for (size_t i = 0; i < CHUNKSIZE; i++)
+    {
+        r->mag[i] = result.mag[i];
     }
 
     return 0;
