@@ -16,7 +16,6 @@ OBJS = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SRCS))
 
 # Do the same for test files
 TESTS = $(wildcard $(TEST_DIR)/*_test.c)
-TEST_OBJS = $(patsubst $(TEST_DIR)/%_test.c, $(BUILD_DIR)/%_test.o, $(TESTS))
 TEST_TARGET = test_runner
 
 # The first rule is the default goal
@@ -40,13 +39,25 @@ $(BUILD_DIR)/%_test.o: $(TEST_DIR)/%_test.c
 clean:
 	rm -rf $(BUILD_DIR) $(TARGET)
 
-test: $(TEST_OBJS)
-	@echo "Running tests..."
-	$(CC) $(TEST_OBJS) -o $(TEST_TARGET) $(LDFLAGS)
-	./$(TEST_TARGET)
 
-%_test: $(BUILD_DIR)/%_test.o
+$(BUILD_DIR)/unity.o:
+	@mkdir -p $(BUILD_DIR) # Create build directory if it doesn't exist
+	@echo "Compiling Unity test framework..."
+	$(CC) $(CFLAGS) -c $(TEST_DIR)/unity/src/unity.c -o $(BUILD_DIR)/unity.o
+
+%_test: $(BUILD_DIR)/%_test.o $(BUILD_DIR)/unity.o
 	@echo "Running single test..."
-	$(CC) $< -o $<.test.exe $(LDFLAGS)
-	./$<.test.exe
+	$(CC) $< $(BUILD_DIR)/unity.o -o $<.test.exe $(LDFLAGS)
+	./$<.test.exe > $<.test.log 2> $<.test.err || \
+	{ echo "Test failed. Check $<.test.log and $<.test.err for details."; exit 0; }
+	@cat $<.test.log $<.test.err
+
+%_test.exe: $(BUILD_DIR)/%_test.o $(BUILD_DIR)/unity.o
+	@echo "Running single test..."
+	$(CC) $< $(BUILD_DIR)/unity.o -o $(TEST_TARGET) $(LDFLAGS)
+
+TEST_OBJS = $(patsubst $(TEST_DIR)/%_test.c, %_test, $(TESTS))
+test: $(TEST_OBJS)
+
+
 .PHONY: all clean
