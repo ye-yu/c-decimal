@@ -2,6 +2,8 @@
 #include "b_dec_split.h"
 #include "b_dec_zero.h"
 #include "b_dec_carry.h"
+#include "b_dec_compare.h"
+#include "b_dec_copy.h"
 
 /**
  * @param a First operand, normalized
@@ -35,9 +37,6 @@ int mul(const b_dec a, const b_dec b, b_dec *r)
         }
     }
 
-    result.sign = a.sign ^ b.sign; // XOR for sign
-    result.prec = a.prec + b.prec;
-
     // for the first four CHUNKSIZE elements, if non-zero, we have an overflow
     // note: result_mag is double the size of CHUNKSIZE
     for (size_t i = 0; i < CHUNKSIZE; i++)
@@ -47,6 +46,9 @@ int mul(const b_dec a, const b_dec b, b_dec *r)
             return 1;
         }
     }
+
+    result.sign = a.sign ^ b.sign; // XOR for sign
+    result.prec = a.prec + b.prec;
 
     // Copy the result into the b_dec structure
     for (size_t i = 0; i < CHUNKSIZE; i++)
@@ -62,4 +64,19 @@ int mul(const b_dec a, const b_dec b, b_dec *r)
     }
 
     return 0;
+}
+
+int mul_10(const b_dec *num, b_dec *result)
+{
+    if (is_zero(*num))
+    {
+        zero(result);
+        return 0;
+    }
+
+    b_dec temp;
+    static const b_dec _10 = {.mag = {10}, .sign = 0, .prec = 0};
+    copy(*num, &temp);
+
+    return mul(temp, _10, result);
 }

@@ -1,5 +1,7 @@
 #include "b_dec_trailing.h"
 #include "b_dec_split.h"
+#include "b_dec_zero.h"
+#include "b_dec_compare.h"
 
 int remove_trailing_zeroes(b_uint *a, b_uint *prec_ref, const size_t size)
 {
@@ -45,4 +47,25 @@ int remove_trailing_zeroes(b_uint *a, b_uint *prec_ref, const size_t size)
     }
 
     return 0;
+}
+
+
+int remove_trailing_log10_zeroes(b_dec *num) {
+    if (is_zero(*num)) {
+        zero(num);
+        return 0;
+    }
+
+    b_uint last = num->mag[CHUNKSIZE - 1];
+    uint64_t quotient = 0;
+    uint64_t remainder = 0;
+
+    quotient = last / 10;
+    remainder = last - (quotient * 10);
+
+    while(remainder == 0) {
+        
+
+    }
+
 }

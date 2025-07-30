@@ -10,3 +10,12 @@ int copy(const b_dec src, b_dec *dest)
     }
     return 0;
 }
+
+int copy_b_uint_arr(const b_uint *src, b_uint *dest, const size_t size)
+{
+    for (size_t i = 0; i < size; i++)
+    {
+        dest[i] = src[i];
+    }
+    return 0;
+}

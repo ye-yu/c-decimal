@@ -15,7 +15,7 @@
 #define MASK 0x7fffffff
 #define MASK_WORD 0xffffffff
 
-typedef struct
+typedef struct _b_dec
 {
     // sign: 0 for positive, 1 for negative
     uint8_t sign;

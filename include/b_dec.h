@@ -1,5 +1,6 @@
 #pragma once
 
+#include "b_dec_add.h"
 #include "b_dec_carry.h"
 #include "b_dec_compare.h"
 #include "b_dec_copy.h"
@@ -8,7 +9,9 @@
 #include "b_dec_mul.h"
 #include "b_dec_print.h"
 #include "b_dec_rand.h"
+#include "b_dec_shift.h"
 #include "b_dec_split.h"
 #include "b_dec_str.h"
+#include "b_dec_subtract.h"
 #include "b_dec_trailing.h"
 #include "b_dec_zero.h"

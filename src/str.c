@@ -1,5 +1,4 @@
 #include "b_dec_str.h"
-#include "b_dec_div_10.h"
 
 int bring_forward(char *str, const size_t size)
 {
@@ -65,7 +64,11 @@ int b_uint_to_str(const b_uint dec, char *str, const size_t size)
 
     for (size_t i = 0; quotient > 0 && i < size - 1; i++)
     {
-        div_10(quotient, &quotient, &remainder);
+        uint64_t q = quotient / 10;
+        uint64_t r = quotient - (q * 10);
+
+        quotient = q;
+        remainder = r;
         put_from_last(str, size, i, char_map[remainder]);
     }
 
@@ -120,7 +123,11 @@ int b_dec_to_str(const b_dec dec, char *str, const size_t size)
                 prec--;
             }
 
-            div_10(quotient, &quotient, &remainder);
+            uint64_t q = quotient / 10;
+            uint64_t r = quotient - (q * 10);
+
+            quotient = q;
+            remainder = r;
             put_from_last(str, size, str_i, char_map[remainder]);
         }
 

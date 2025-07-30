@@ -1,6 +1,12 @@
 #include "b_dec_div_10.h"
+#include "b_dec_shift.h"
+#include "b_dec_mul.h"
+#include "b_dec_add.h"
+#include "b_dec_copy.h"
+#include "b_dec_subtract.h"
 
-int div_10(const uint64_t num, uint64_t *quotient, uint64_t *remainder) {
+int div_10(const uint64_t num, uint64_t *quotient, uint64_t *remainder)
+{
     uint64_t q, r;
     q = (num >> 1) + (num >> 2);
     q = q + (q >> 4);
@@ -18,4 +24,55 @@ int div_10(const uint64_t num, uint64_t *quotient, uint64_t *remainder) {
     *quotient = q;
     *remainder = r;
     return 0;
+}
+
+int div_10_b_dec(const b_dec *num, b_dec *result)
+{
+    if (is_zero(*num))
+    {
+        zero(result);
+        return 0;
+    }
+
+    b_uint mag[CHUNKSIZE] = num->mag;
+
+    b_uint shift_buffer_left[CHUNKSIZE];
+    b_uint shift_buffer_right[CHUNKSIZE];
+
+#define SUM_LEFT_RIGHT_AND_MAYBE_PANIC                                                                   \
+    do                                                                                                   \
+    {                                                                                                    \
+        int carry = add_b_uint_arr(shift_buffer_left, shift_buffer_right, shift_buffer_left, CHUNKSIZE); \
+        if (carry)                                                                                       \
+        {                                                                                                \
+            return 1; /* should not happen? but if it does, i don't know what to do  */                  \
+        }                                                                                                \
+    } while (0);
+
+    // prepare for (num >> 1) and (num >> 2)
+    shift_arr_right(mag, shift_buffer_left, CHUNKSIZE, 1);
+    shift_arr_right(mag, shift_buffer_right, CHUNKSIZE, 2);
+
+    // put sum to left buffer
+    SUM_LEFT_RIGHT_AND_MAYBE_PANIC
+
+    const target_bit_to_shift = BITSIZE * CHUNKSIZE;
+    for (size_t i = 0b100; i <= target_bit_to_shift; i <<= 1)
+    {
+        // prepare for (num >> i)
+        copy_b_uint_arr(shift_buffer_left, shift_buffer_right, CHUNKSIZE);
+        shift_arr_right(shift_buffer_left, shift_buffer_right, CHUNKSIZE, i);
+        // put sum to left buffer
+        SUM_LEFT_RIGHT_AND_MAYBE_PANIC
+    }
+
+    // now prepare for final (num >> 3)
+    // prepare for (num >> i)
+    copy_b_uint_arr(shift_buffer_left, shift_buffer_right, CHUNKSIZE);
+    shift_arr_right(shift_buffer_left, shift_buffer_right, CHUNKSIZE, 3);
+    // put sum to left buffer
+    SUM_LEFT_RIGHT_AND_MAYBE_PANIC
+
+    mul_10(shift_buffer_left, shift_buffer_left);
+
 }
