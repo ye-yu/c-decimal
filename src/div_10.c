@@ -4,6 +4,8 @@
 #include "b_dec_add.h"
 #include "b_dec_copy.h"
 #include "b_dec_subtract.h"
+#include "b_dec_compare.h"
+#include "b_dec_zero.h"
 
 int div_10(const uint64_t num, uint64_t *quotient, uint64_t *remainder)
 {
@@ -34,7 +36,8 @@ int div_10_b_dec(const b_dec *num, b_dec *result)
         return 0;
     }
 
-    b_uint mag[CHUNKSIZE] = num->mag;
+    b_uint mag[CHUNKSIZE];
+    copy_b_uint_arr(num->mag, mag, CHUNKSIZE);
 
     b_uint shift_buffer_left[CHUNKSIZE];
     b_uint shift_buffer_right[CHUNKSIZE];
@@ -56,7 +59,7 @@ int div_10_b_dec(const b_dec *num, b_dec *result)
     // put sum to left buffer
     SUM_LEFT_RIGHT_AND_MAYBE_PANIC
 
-    const target_bit_to_shift = BITSIZE * CHUNKSIZE;
+    const size_t target_bit_to_shift = BITSIZE * CHUNKSIZE;
     for (size_t i = 0b100; i <= target_bit_to_shift; i <<= 1)
     {
         // prepare for (num >> i)
@@ -73,6 +76,6 @@ int div_10_b_dec(const b_dec *num, b_dec *result)
     // put sum to left buffer
     SUM_LEFT_RIGHT_AND_MAYBE_PANIC
 
-    mul_10(shift_buffer_left, shift_buffer_left);
-
+    // mul_10(shift_buffer_left, shift_buffer_left);
+    return 1; // not implemented yet
 }

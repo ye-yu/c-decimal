@@ -22,7 +22,7 @@ void test_compare_mag_more_than(void)
 
     b.mag[CHUNKSIZE - 1] = rand() + 1; // Ensure b is greater than a
     a.mag[CHUNKSIZE - 1] = b.mag[CHUNKSIZE - 1] - 1;
-    TEST_ASSERT_GREATER_THAN(0, compare(a, b));
+    TEST_ASSERT_GREATER_THAN(0, compare(b, a));
 }
 
 void test_compare_mag_equal(void)
@@ -46,7 +46,7 @@ void test_compare_mag_less_than(void)
 
     b.mag[CHUNKSIZE - 1] = rand() + 1; // Ensure b is greater than a
     a.mag[CHUNKSIZE - 1] = b.mag[CHUNKSIZE - 1] - 1;
-    TEST_ASSERT_LESS_THAN(0, compare(b, a));
+    TEST_ASSERT_LESS_THAN(0, compare(a, b));
 }
 
 int main(void)
