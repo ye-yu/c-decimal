@@ -49,9 +49,10 @@ int remove_trailing_zeroes(b_uint *a, b_uint *prec_ref, const size_t size)
     return 0;
 }
 
-
-int remove_trailing_log10_zeroes(b_dec *num) {
-    if (is_zero(*num)) {
+int remove_trailing_log10_zeroes(b_dec *num)
+{
+    if (is_zero_b_dec(*num))
+    {
         zero(num);
         return 0;
     }
@@ -63,9 +64,10 @@ int remove_trailing_log10_zeroes(b_dec *num) {
     quotient = last / 10;
     remainder = last - (quotient * 10);
 
-    while(remainder == 0) {
-        
-
+    while (remainder == 0)
+    {
+        return 1; // not implemented yet
     }
 
+    return 1; // not implemented yet
 }

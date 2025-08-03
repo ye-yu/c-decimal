@@ -30,7 +30,7 @@ int div_10(const uint64_t num, uint64_t *quotient, uint64_t *remainder)
 
 int div_10_b_dec(const b_dec *num, b_dec *result)
 {
-    if (is_zero(*num))
+    if (is_zero_b_dec(*num))
     {
         zero(result);
         return 0;
@@ -59,7 +59,11 @@ int div_10_b_dec(const b_dec *num, b_dec *result)
     // put sum to left buffer
     SUM_LEFT_RIGHT_AND_MAYBE_PANIC
 
-    const size_t target_bit_to_shift = BITSIZE * CHUNKSIZE;
+    // following 4, 8, 16, 32, etc...
+    // if bitsize is 64, target is 32
+    // if bitsize is 128, target is 64
+    // if bitsize is 256, target is 128, etc...
+    const size_t target_bit_to_shift = (BITSIZE * CHUNKSIZE) / 2;
     for (size_t i = 0b100; i <= target_bit_to_shift; i <<= 1)
     {
         // prepare for (num >> i)
@@ -76,6 +80,6 @@ int div_10_b_dec(const b_dec *num, b_dec *result)
     // put sum to left buffer
     SUM_LEFT_RIGHT_AND_MAYBE_PANIC
 
-    // mul_10(shift_buffer_left, shift_buffer_left);
+    // mul_10_b_dec(shift_buffer_left, shift_buffer_left);
     return 1; // not implemented yet
 }

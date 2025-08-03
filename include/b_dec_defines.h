@@ -13,14 +13,12 @@
 #define ONE ((b_uint)1)
 #define ZERO ((b_uint)0)
 #define MASK 0x7fffffff
-#define MASK_WORD 0xffffffff
+#define ALL_ONES (ZERO - 1)
 
 typedef struct _b_dec
 {
     // sign: 0 for positive, 1 for negative
     uint8_t sign;
-    // precision in base10
     b_uint prec;
-    // most significant bit is carry
     b_uint mag[CHUNKSIZE];
 } b_dec;

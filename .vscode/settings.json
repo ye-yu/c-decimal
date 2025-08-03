@@ -18,7 +18,11 @@
         "b_dec_rand.h": "c",
         "b_dec_compare.h": "c",
         "b_dec_shift.h": "c",
-        "b_dec_add.h": "c"
+        "b_dec_add.h": "c",
+        "b_dec_subtract.h": "c",
+        "stdlib.h": "c",
+        "time.h": "c",
+        "stdio.h": "c"
     },
     "makefile.makefilePath": "${workspaceFolder}/Makefile",
     "makefile.makePath": "C:\\msys64\\usr\\bin",

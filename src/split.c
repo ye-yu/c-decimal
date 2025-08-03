@@ -3,7 +3,7 @@
 
 b_uint last_half(const r_uint comp)
 {
-    return (b_uint)(comp & MASK_WORD);
+    return (b_uint)(comp & ALL_ONES);
 }
 
 b_uint first_half(const r_uint comp)
