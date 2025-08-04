@@ -26,8 +26,9 @@ int add_b_uint_arr(const b_uint *a, const b_uint *b, b_uint *result, const size_
     for (int64_t i_from_last = size_int - 1; i_from_last >= 0; i_from_last--)
     {
         b_uint sum;
-        const int overflown = add(a[i_from_last], b[i_from_last], &sum);
-        result[i_from_last] = sum + carry;
+        int overflown = add(a[i_from_last], b[i_from_last], &sum);
+        overflown += add(sum, carry, &sum);
+        result[i_from_last] = sum;
 
         if (overflown)
         {
