@@ -34,6 +34,7 @@ int shift_arr_right(b_uint *operand, b_uint *result, size_t size, size_t bits_to
 
         result[i + 1] |= (last_half << (BITSIZE - bits_to_shift));
     }
+    return 0;
 }
 
 int shift_arr_left(b_uint *operand, b_uint *result, size_t size, size_t bits_to_shift)
@@ -55,7 +56,7 @@ int shift_arr_left(b_uint *operand, b_uint *result, size_t size, size_t bits_to_
     }
 
     b_uint first_half, last_half;
-    for (long long i = 0; i < size; i++)
+    for (size_t i = 0; i < size; i++)
     {
         first_half = 0;
         last_half = 0;
@@ -68,4 +69,5 @@ int shift_arr_left(b_uint *operand, b_uint *result, size_t size, size_t bits_to_
 
         result[i - 1] |= (first_half >> (BITSIZE - bits_to_shift));
     }
+    return 0;
 }

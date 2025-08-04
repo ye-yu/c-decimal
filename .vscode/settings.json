@@ -22,7 +22,9 @@
         "b_dec_subtract.h": "c",
         "stdlib.h": "c",
         "time.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "setjmp.h": "c",
+        "stddef.h": "c"
     },
     "makefile.makefilePath": "${workspaceFolder}/Makefile",
     "makefile.makePath": "C:\\msys64\\usr\\bin",

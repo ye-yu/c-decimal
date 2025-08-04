@@ -3,17 +3,17 @@
 
 void setUp(void)
 {
-    printf("Setting up tests...\n");
+    printf("\nSetting up tests...\n");
 }
 
 void tearDown(void)
 {
-    printf("Tearing down tests...\n");
+    printf("\nTearing down tests...\n");
 }
 
 void main_test(void)
 {
-    TEST_IGNORE_MESSAGE("No need to run this test, it is just an example.");
+    TEST_IGNORE_MESSAGE("No need to run this test, it is just an example. ");
     srand(1);
     b_uint array[2] = {0, 0};
     for (size_t i = 0; i < 100; i++)

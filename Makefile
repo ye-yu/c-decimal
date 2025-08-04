@@ -51,7 +51,11 @@ $(BUILD_DIR)/unity.o:
 %_test: $(BUILD_DIR)/%_test.o $(BUILD_DIR)/unity.o $(OBJS)
 	@echo "Running single test..."
 	$(CC) $< $(BUILD_DIR)/unity.o $(OBJS) -o $<.test.exe $(LDFLAGS)
-	./$<.test.exe
+	./$<.test.exe | \
+		sed ''/PASS/s//`printf "\033[32mPASS\033[0m"`/'' | \
+		sed ''/FAIL/s//`printf "\033[31mFAIL\033[0m"`/'' > $<.log
+	@cat $<.log
+	@grep "0 Failures" $<.log > /dev/null || exit 1
 
 %_test.exe: $(BUILD_DIR)/%_test.o $(BUILD_DIR)/unity.o $(OBJS)
 	@echo "Running single test..."
@@ -62,3 +66,7 @@ test: $(TEST_OBJS)
 
 
 .PHONY: all clean
+
+ifndef VERBOSE
+.SILENT:
+endif
