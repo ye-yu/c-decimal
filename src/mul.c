@@ -4,6 +4,7 @@
 #include "b_dec_carry.h"
 #include "b_dec_compare.h"
 #include "b_dec_copy.h"
+#include "b_dec_add.h"
 
 /**
  * @param a First operand, normalized
@@ -42,65 +43,54 @@ int mul_b_uint(const b_uint a, const b_uint b, b_uint *r)
 
 int mul_b_uint_arr(const b_uint *arr_a, const b_uint *arr_b, b_uint *r, const size_t size)
 {
+    zero_b_uint_arr(r, size);
     if (is_zero_b_uint_arr(arr_a, size) || is_zero_b_uint_arr(arr_b, size))
     {
-        zero_b_uint_arr(r, size);
         return 0; // nothing to multiply
     }
 
     int overflow = 0;
     for (size_t index_b = 0; index_b < size; index_b++)
     {
-        const size_t index_b_from_last = BITSIZE - 1 - index_b;
+        const size_t index_b_from_last = size - 1 - index_b;
         r_uint operand_b = (r_uint)arr_b[index_b_from_last];
+        b_uint carry_next = 0;
 
         for (size_t index_a = 0; index_a < size; index_a++)
         {
-            const size_t index_a_from_last = BITSIZE - 1 - index_a;
+            const size_t index_a_from_last = size - 1 - index_a;
             const r_uint operand_a = (r_uint)arr_a[index_a_from_last];
             const r_uint product = operand_a * operand_b;
             const b_uint first_half_product = first_half(product);
             const b_uint last_half_product = last_half(product);
 
             const size_t index_r_last = index_b_from_last - index_a;
-            const b_uint r_last_sum = r[index_r_last] + last_half_product;
-            r[index_r_last] = r_last_sum;
-            const b_uint carry_to_r_first = r_last_sum < r[index_r_last] || r_last_sum < last_half_product ? 1 : 0;
-
-            if (carry_to_r_first)
-            {
-                if (index_r_last == 0)
-                {
-                    overflow = carry_to_r_first;
-                }
-                else
-                {
-                    r[index_r_last - 1] += carry_to_r_first;
-                }
-            }
+            const b_uint carry_to_r_first = add_b_uint(r[index_r_last], last_half_product, r + index_r_last) ? 1 : 0;
 
             if (index_r_last == 0)
             {
+                carry_next = carry_to_r_first || first_half_product ? 1 : 0;
                 continue;
             }
 
             const size_t index_r_first = index_r_last - 1;
-            const b_uint r_first_sum = r[index_r_first] + first_half_product + carry_to_r_first;
-            r[index_r_first] = r_first_sum;
-            const b_uint carry_to_r_first_before = r_first_sum < r[index_r_first] || r_first_sum < first_half_product ? 1 : 0;
-            if (carry_to_r_first_before)
+            b_uint carry_to_r_first_before = add_b_uint(r[index_r_first], carry_to_r_first, r + index_r_first);
+            carry_to_r_first_before += add_b_uint(r[index_r_first], first_half_product, r + index_r_first);
+            if (index_r_first == 0)
             {
-                if (index_r_first == 0)
-                {
-                    overflow = carry_to_r_first_before;
-                }
-                else
-                {
-                    r[index_r_first - 1] += carry_to_r_first_before;
-                }
+                carry_next = carry_to_r_first_before;
+                continue;
+            }
+
+            // propagate carry
+            for (size_t index_r = 0; index_r < index_r_first && carry_next; index_r++)
+            {
+                const size_t index_r_from_last = index_r_first - 1 - index_r;
+                carry_next = add_b_uint(r[index_r_from_last], carry_next, r + index_r_from_last);
             }
         }
-    }
 
+        overflow |= carry_next ? 1 : 0; // accumulate overflow status
+    }
     return overflow;
 }

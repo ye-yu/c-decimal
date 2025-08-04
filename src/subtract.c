@@ -8,7 +8,7 @@ int subtract(const b_uint a, const b_uint b, b_uint *result)
 {
     const b_uint b_comp = ~b;
     b_uint sum = 0;
-    int overflow = add(a, b_comp, &sum);
+    int overflow = add_b_uint(a, b_comp, &sum);
     if (overflow)
     {
         sum++;
@@ -46,7 +46,7 @@ int subtract_b_uint_arr(const b_uint *a, const b_uint *b, b_uint *result, const 
         for (size_t i = 0; i < size && overflow; i++)
         {
             const size_t i_from_last = size - i - 1;
-            overflow = add(result[i_from_last], 1, &result[i_from_last]);
+            overflow = add_b_uint(result[i_from_last], 1, &result[i_from_last]);
         }
     }
 

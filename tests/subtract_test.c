@@ -55,8 +55,8 @@ void test_subtract_b_uint_borrow_subtract(void)
     b_uint result[ARRAYSIZE];
     const int overflow = subtract_b_uint_arr(a, b, result, ARRAYSIZE);
     TEST_ASSERT_EQUAL(0, overflow);
-    TEST_ASSERT_EQUAL(ALL_ONES - 1, result[0]); // ALL_ONES borrow 1
-    TEST_ASSERT_EQUAL(~((b_uint)0b110), result[1]);     // 3 - 10 = -7, which is represented as ALL_ONES - 6
+    TEST_ASSERT_EQUAL(ALL_ONES - 1, result[0]);     // ALL_ONES borrow 1
+    TEST_ASSERT_EQUAL(~((b_uint)0b110), result[1]); // 3 - 10 = -7, which is represented as ALL_ONES - 6
 }
 
 void test_subtract_b_uint_underflow(void)
