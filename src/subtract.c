@@ -4,7 +4,7 @@
 #include "b_dec_compare.h"
 #include "b_dec_zero.h"
 
-int subtract(const b_uint a, const b_uint b, b_uint *result)
+int subtract_b_uint(const b_uint a, const b_uint b, b_uint *result)
 {
     const b_uint b_comp = ~b;
     b_uint sum = 0;
