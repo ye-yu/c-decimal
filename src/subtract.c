@@ -39,7 +39,8 @@ int subtract_b_uint_arr(const b_uint *a, const b_uint *b, b_uint *result, const 
         result[i] = ~b[i];
     }
 
-    int overflow = add_b_uint_arr(a, result, result, size);
+    const int underflow = compare_b_uint_arr(a, b, size) < 0 ? 1 : 0;
+    int overflow = add_b_uint_arr(a, result, result, size) + underflow;
     if (overflow)
     {
         for (size_t i = 0; i < size && overflow; i++)
@@ -48,5 +49,6 @@ int subtract_b_uint_arr(const b_uint *a, const b_uint *b, b_uint *result, const 
             overflow = add(result[i_from_last], 1, &result[i_from_last]);
         }
     }
-    return compare_b_uint_arr(a, b, size) < 0 ? 1 : overflow;
+
+    return underflow;
 }
