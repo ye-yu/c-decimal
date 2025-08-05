@@ -2,6 +2,7 @@
 #include "b_dec.h"
 
 #define ARRAYSIZE 2
+#define ARRAYSIZE_DOUBLE 4
 
 void setUp(void)
 {
@@ -21,6 +22,20 @@ void test_subtract_b_uint_subtract(void)
     TEST_ASSERT_EQUAL(0, overflow);
     TEST_ASSERT_EQUAL(0, result[0]);
     TEST_ASSERT_EQUAL(34 - 12, result[1]);
+}
+
+void test_subtract_b_uint_subtract_double(void)
+{
+    const b_uint a[ARRAYSIZE_DOUBLE] = {0, 0, 0, 220};
+    const b_uint b[ARRAYSIZE_DOUBLE] = {0, 0, 0, 210};
+
+    b_uint result[ARRAYSIZE_DOUBLE];
+    const int overflow = subtract_b_uint_arr(a, b, result, ARRAYSIZE_DOUBLE);
+    TEST_ASSERT_EQUAL(0, overflow);
+    TEST_ASSERT_EQUAL(0, result[0]);
+    TEST_ASSERT_EQUAL(0, result[1]);
+    TEST_ASSERT_EQUAL(0, result[2]);
+    TEST_ASSERT_EQUAL(10, result[3]);
 }
 
 void test_subtract_b_uint_subtract_zero(void)
@@ -75,6 +90,7 @@ int main()
 {
     UNITY_BEGIN();
     RUN_TEST(test_subtract_b_uint_subtract);
+    RUN_TEST(test_subtract_b_uint_subtract_double);
     RUN_TEST(test_subtract_b_uint_subtract_zero);
     RUN_TEST(test_subtract_b_uint_borrow);
     RUN_TEST(test_subtract_b_uint_borrow_subtract);

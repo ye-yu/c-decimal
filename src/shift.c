@@ -2,7 +2,7 @@
 #include "b_dec_copy.h"
 #include "b_dec_split.h"
 
-int shift_arr_right(b_uint *operand, b_uint *result, size_t size, size_t bits_to_shift)
+int shift_arr_right(const b_uint *operand, b_uint *result, size_t size, size_t bits_to_shift)
 {
     const long long last = (long long)(size - 1);
     if (bits_to_shift == BITSIZE)
@@ -37,7 +37,7 @@ int shift_arr_right(b_uint *operand, b_uint *result, size_t size, size_t bits_to
     return 0;
 }
 
-int shift_arr_left(b_uint *operand, b_uint *result, size_t size, size_t bits_to_shift)
+int shift_arr_left(const b_uint *operand, b_uint *result, size_t size, size_t bits_to_shift)
 {
     const long long last = (long long)(size - 1);
     if (bits_to_shift == BITSIZE)

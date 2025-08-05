@@ -1,4 +1,6 @@
 #include "b_dec_add.h"
+#include "b_dec_copy.h"
+#include "b_dec_zero.h"
 
 int add_b_uint(const b_uint a, const b_uint b, b_uint *result)
 {
@@ -13,7 +15,7 @@ int add_b_uint(const b_uint a, const b_uint b, b_uint *result)
     return 0;
 }
 
-int add_b_uint_arr(const b_uint *a, const b_uint *b, b_uint *result, const size_t size)
+int add_b_uint_arr(const b_uint *a, const b_uint *b, b_uint *r, const size_t size)
 {
     if (size == 0)
     {
@@ -22,6 +24,20 @@ int add_b_uint_arr(const b_uint *a, const b_uint *b, b_uint *result, const size_
     }
 
     b_uint carry = 0;
+    b_uint *result = (b_uint *)malloc(size * sizeof(b_uint));
+    if (!result)
+    {
+        return 1; // memory allocation failed
+    }
+    zero_b_uint_arr(result, size);
+
+#define RETURN_AFTER_FREE(v) \
+    do                       \
+    {                        \
+        free(result);        \
+        return v;            \
+    } while (0);
+
     int64_t size_int = (int64_t)size;
     for (int64_t i_from_last = size_int - 1; i_from_last >= 0; i_from_last--)
     {
@@ -40,6 +56,7 @@ int add_b_uint_arr(const b_uint *a, const b_uint *b, b_uint *result, const size_
             carry = 0;
         }
     }
+    copy_b_uint_arr(result, r, size);
 
-    return carry; // return carry if there was an overflow
+    RETURN_AFTER_FREE(carry); // return carry if there was an overflow
 }

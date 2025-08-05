@@ -19,20 +19,35 @@ int subtract_b_uint(const b_uint a, const b_uint b, b_uint *result)
     return b > a ? 1 : 0;
 }
 
-int subtract_b_uint_arr(const b_uint *a, const b_uint *b, b_uint *result, const size_t size)
+int subtract_b_uint_arr(const b_uint *a, const b_uint *b, b_uint *r, const size_t size)
+
 {
 
     if (is_zero_b_uint_arr(b, size))
     {
-        copy_b_uint_arr(a, result, size);
+        copy_b_uint_arr(a, r, size);
         return 0; // nothing to subtract
     }
 
     if (compare_b_uint_arr(a, b, size) == 0)
     {
-        zero_b_uint_arr(result, size);
+        zero_b_uint_arr(r, size);
         return 0; // same number
     }
+
+    b_uint *result = (b_uint *)malloc(size * sizeof(b_uint));
+    if (!result)
+    {
+        return 1; // memory allocation failed
+    }
+    zero_b_uint_arr(result, size);
+
+#define RETURN_AFTER_FREE(v) \
+    do                       \
+    {                        \
+        free(result);        \
+        return v;            \
+    } while (0);
 
     for (size_t i = 0; i < size; i++)
     {
@@ -50,5 +65,6 @@ int subtract_b_uint_arr(const b_uint *a, const b_uint *b, b_uint *result, const 
         }
     }
 
-    return underflow;
+    copy_b_uint_arr(result, r, size);
+    RETURN_AFTER_FREE(underflow);
 }

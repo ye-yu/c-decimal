@@ -94,3 +94,41 @@ int mul_b_uint_arr(const b_uint *arr_a, const b_uint *arr_b, b_uint *r, const si
     }
     return overflow;
 }
+
+int mul_10_b_uint_arr(const b_uint *arr_a, b_uint *r, const size_t size)
+{
+    b_uint *result = (b_uint *)malloc(size * sizeof(b_uint));
+    b_uint *_10 = (b_uint *)malloc(size * sizeof(b_uint));
+#define MAYBE_FREE(v) \
+    do                \
+    {                 \
+        if (v)        \
+        {             \
+            free(v);  \
+        }             \
+    } while (0);
+
+    if (!result || !_10)
+    {
+        MAYBE_FREE(result);
+        MAYBE_FREE(_10);
+        return 1; // error: memory allocation failed
+    }
+
+    zero_b_uint_arr(result, size);
+    zero_b_uint_arr(_10, size);
+    _10[size - 1] = 10; // Initialize the first element to 10, rest are zero
+
+#define RETURN_AFTER_FREE(v) \
+    do                       \
+    { /* free here */        \
+        free(result);        \
+        free(_10);           \
+        return v;            \
+    } while (0);
+
+    int overflow = mul_b_uint_arr(arr_a, _10, result, size);
+    copy_b_uint_arr(result, r, size);
+
+    RETURN_AFTER_FREE(overflow);
+}
