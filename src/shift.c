@@ -4,16 +4,18 @@
 
 int shift_arr_right(const b_uint *operand, b_uint *result, size_t size, size_t bits_to_shift)
 {
-    const long long last = (long long)(size - 1);
-    if (bits_to_shift == BITSIZE)
-    {
-        for (long long i = last; i >= 0; i--)
-        {
-            result[i] = 0; // Shift by BITSIZE means all bits are shifted out
-        }
-        return 0;
-    }
     copy_b_uint_arr(operand, result, size);
+    while (bits_to_shift >= BITSIZE)
+    {
+        bits_to_shift -= BITSIZE;
+        // Shift the whole array by one element to the right
+        for (size_t i = size - 1; i > 0; i--)
+        {
+            result[i] = result[i - 1];
+        }
+        result[0] = 0; // The first element becomes zero after shifting
+    }
+    const long long last = (long long)(size - 1);
 
     if (bits_to_shift == 0)
     {
@@ -39,16 +41,17 @@ int shift_arr_right(const b_uint *operand, b_uint *result, size_t size, size_t b
 
 int shift_arr_left(const b_uint *operand, b_uint *result, size_t size, size_t bits_to_shift)
 {
-    const long long last = (long long)(size - 1);
-    if (bits_to_shift == BITSIZE)
-    {
-        for (long long i = last; i >= 0; i--)
-        {
-            result[i] = 0; // Shift by BITSIZE means all bits are shifted out
-        }
-        return 0;
-    }
     copy_b_uint_arr(operand, result, size);
+    while (bits_to_shift >= BITSIZE)
+    {
+        bits_to_shift -= BITSIZE;
+        // Shift the whole array by one element to the left
+        for (size_t i = 0; i < size - 1; i++)
+        {
+            result[i] = result[i + 1];
+        }
+        result[size - 1] = 0; // The last element becomes zero after shifting
+    }
 
     if (bits_to_shift == 0)
     {

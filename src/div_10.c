@@ -28,6 +28,31 @@ int div_10(const uint64_t num, uint64_t *quotient, uint64_t *remainder)
     return 0;
 }
 
+int div_10_uint128(const uint128_t num, uint128_t *quotient, uint128_t *remainder)
+{
+#ifdef UINT128_NOT_SUPPORTED
+    return 1; // error: UINT128 is not supported on this platform
+#endif
+    uint128_t q, r;
+    q = (num >> 1) + (num >> 2);
+    q = q + (q >> 4);
+    q = q + (q >> 8);
+    q = q + (q >> 16);
+    q = q + (q >> 32);
+    q = q + (q >> 64); // correct?
+    q = q >> 3;
+    r = num - q * 10;
+    if (r > 9)
+    {
+        q++;
+        r -= 10;
+    }
+
+    *quotient = q;
+    *remainder = r;
+    return 0;
+}
+
 int div_10_b_uint_arr(const b_uint *num, b_uint *result, uint8_t *remainder, const size_t size)
 {
 

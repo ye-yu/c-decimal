@@ -2,6 +2,7 @@
 #include "b_dec.h"
 
 #define ARRAYSIZE 2
+#define ARRAYSIZE_DOUBLE 4
 
 void setUp(void)
 {
@@ -71,6 +72,20 @@ void test_add_b_uint_overflow(void)
     TEST_ASSERT_EQUAL(0, result[1]);
 }
 
+void test_add_b_uint_add_double(void)
+{
+    const b_uint a[ARRAYSIZE_DOUBLE] = {0, 0, 0b1000'0000'0000'0000'0000'0000'0000'0000, 0b1000'0000'0000'0000'0000'0000'0110'1110};
+    const b_uint b[ARRAYSIZE_DOUBLE] = {0, 0, 0b0100'0000'0000'0000'0000'0000'0000'0000, 0b0100'0000'0000'0000'0000'0000'0011'0111};
+
+    b_uint result[ARRAYSIZE_DOUBLE];
+    const int overflow = add_b_uint_arr(a, b, result, ARRAYSIZE_DOUBLE);
+    TEST_ASSERT_EQUAL(0, overflow);
+    TEST_ASSERT_EQUAL(0, result[0]);
+    TEST_ASSERT_EQUAL(0, result[1]);
+    TEST_ASSERT_EQUAL(0b1100'0000'0000'0000'0000'0000'0000'0000, result[2]);
+    TEST_ASSERT_EQUAL(0b1100'0000'0000'0000'0000'0000'1010'0101, result[3]);
+}
+
 int main()
 {
     UNITY_BEGIN();
@@ -79,5 +94,6 @@ int main()
     RUN_TEST(test_add_b_uint_carry);
     RUN_TEST(test_add_b_uint_carry_add);
     RUN_TEST(test_add_b_uint_overflow);
+    RUN_TEST(test_add_b_uint_add_double);
     return UNITY_END();
 }

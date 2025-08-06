@@ -54,8 +54,8 @@ const char char_map[] = "0123456789";
  */
 int b_uint_to_str(const b_uint dec, char *str, const size_t size)
 {
-    uint64_t quotient = (uint64_t)dec;
-    uint64_t remainder = 0;
+    b_uint quotient = dec;
+    b_uint remainder = 0;
 
     for (size_t i = 0; i < size; i++)
     {
@@ -64,8 +64,8 @@ int b_uint_to_str(const b_uint dec, char *str, const size_t size)
 
     for (size_t i = 0; quotient > 0 && i < size - 1; i++)
     {
-        uint64_t q = quotient / 10;
-        uint64_t r = quotient - (q * 10);
+        b_uint q = quotient / 10;
+        b_uint r = quotient - (q * 10);
 
         quotient = q;
         remainder = r;

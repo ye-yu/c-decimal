@@ -22,3 +22,10 @@ typedef struct _b_dec
     b_uint prec;
     b_uint mag[CHUNKSIZE];
 } b_dec;
+
+#ifdef __int128
+typedef unsigned __int128 uint128_t;
+#else
+#define UINT128_NOT_SUPPORTED
+typedef char uint128_t;
+#endif
