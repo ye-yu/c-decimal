@@ -5,6 +5,7 @@
 #include "b_dec_compare.h"
 #include "b_dec_copy.h"
 #include "b_dec_add.h"
+#include "b_dec_trailing.h"
 
 /**
  * @param a First operand, normalized
@@ -20,8 +21,15 @@ int mul_b_dec(const b_dec a, const b_dec b, b_dec *r)
     result.prec = a.prec + b.prec;
     int overflow = mul_b_uint_arr(a.mag, b.mag, result.mag, CHUNKSIZE);
 
+    if (overflow)
+    {
+        copy(result, r);
+        return 1; // overflow occurred
+    }
+
+    remove_trailing_zeroes(result.mag, &result.prec, CHUNKSIZE);
     copy(result, r);
-    return overflow;
+    return 0;
 }
 
 int mul_10_b_dec(const b_dec num, b_dec *result)

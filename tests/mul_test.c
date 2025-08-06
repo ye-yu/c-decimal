@@ -3,6 +3,7 @@
 
 #define ARRAYSIZE 2
 #define ARRAYSIZE_DOUBLE 4
+#define STR_SIZE (BITSIZE * CHUNKSIZE)
 
 void setUp(void)
 {
@@ -11,6 +12,20 @@ void setUp(void)
 void tearDown(void)
 {
 }
+
+void __print_multiply_result(b_dec a, b_dec b, b_dec result, const char *file, int line, const char *func)
+{
+    printf("%s:%d:%s: ", file, line, func);
+    print_b_dec(a);
+    printf(" * ");
+    print_b_dec(b);
+    printf(" = ");
+    print_b_dec(result);
+    printf("\n");
+}
+
+#define print_multiply_result(a, b, result) \
+    __print_multiply_result(a, b, result, __FILE__, __LINE__, __func__)
 
 void test_mul_b_uint(void)
 {
@@ -158,6 +173,108 @@ void test_mul_b_uint_arr_overflow_double(void)
     TEST_ASSERT_EQUAL(ALL_ONES << 1, result[3]);
 }
 
+// b_dec tests
+void test_mul_b_dec(void)
+{
+    b_dec a, b, result;
+    zero(&a);
+    zero(&b);
+    zero(&result);
+    a.sign = 0;
+    a.prec = 0;
+    a.mag[CHUNKSIZE - 1] = 12;
+    b.sign = 0;
+    b.prec = 0;
+    b.mag[CHUNKSIZE - 1] = 34;
+
+    const int overflow = mul_b_dec(a, b, &result);
+
+    TEST_ASSERT_EQUAL(0, overflow);
+    TEST_ASSERT_EQUAL(0, result.sign);
+    TEST_ASSERT_EQUAL(0, result.prec);
+    TEST_ASSERT_EQUAL(0, result.mag[0]);
+    TEST_ASSERT_EQUAL(0, result.mag[1]);
+    TEST_ASSERT_EQUAL(0, result.mag[2]);
+    TEST_ASSERT_EQUAL(408, result.mag[3]);
+}
+
+void test_mul_b_dec_prec(void)
+{
+    b_dec a, b, result;
+    zero(&a);
+    zero(&b);
+    zero(&result);
+    a.sign = 0;
+    a.prec = 0;
+    a.mag[CHUNKSIZE - 1] = 0b110101;
+    b.sign = 0;
+    b.prec = 1;
+    b.mag[CHUNKSIZE - 1] = 0b101;
+
+    const int overflow = mul_b_dec(a, b, &result);
+    print_multiply_result(a, b, result);
+
+    TEST_ASSERT_EQUAL(0, overflow);
+    TEST_ASSERT_EQUAL(0, result.sign);
+    TEST_ASSERT_EQUAL(1, result.prec);
+    TEST_ASSERT_EQUAL(0, result.mag[0]);
+    TEST_ASSERT_EQUAL(0, result.mag[1]);
+    TEST_ASSERT_EQUAL(0, result.mag[2]);
+    TEST_ASSERT_EQUAL(0b110101 * 0b101, result.mag[3]);
+}
+
+void test_mul_b_dec_large(void)
+{
+    b_dec a, b, result;
+    zero(&a);
+    zero(&b);
+    zero(&result);
+    a.sign = 0;
+    a.prec = 0;
+    a.mag[CHUNKSIZE - 2] = 0b110;
+    a.mag[CHUNKSIZE - 1] = 0b110101;
+    b.sign = 0;
+    b.prec = 1;
+    b.mag[CHUNKSIZE - 1] = 0b101;
+
+    const int overflow = mul_b_dec(a, b, &result);
+    print_multiply_result(a, b, result);
+
+    // compare by str, python says 25769803829 * 0.5
+    // 12884901914.5
+    char str[STR_SIZE];
+    b_dec_to_str(result, str, STR_SIZE);
+
+    TEST_ASSERT_EQUAL(0, overflow);
+    TEST_ASSERT_EQUAL_STRING("12884901914.5", str);
+}
+
+void test_mul_b_dec_trailing(void)
+{
+    b_dec a, b, result;
+    zero(&a);
+    zero(&b);
+    zero(&result);
+    a.sign = 0;
+    a.prec = 5;
+    a.mag[CHUNKSIZE - 2] = 0b110;
+    a.mag[CHUNKSIZE - 1] = 0b110101;
+    b.sign = 0;
+    b.prec = 0;
+    b.mag[CHUNKSIZE - 1] = 0b10100000000;
+
+    const int overflow = mul_b_dec(a, b, &result);
+    print_multiply_result(a, b, result);
+
+    // compare by str, python says 257698.03829 * 1280
+    // 329853489.0112
+    char str[STR_SIZE];
+    b_dec_to_str(result, str, STR_SIZE);
+
+    TEST_ASSERT_EQUAL(0, overflow);
+    TEST_ASSERT_EQUAL_STRING("329853489.0112", str);
+}
+
 int main()
 {
     UNITY_BEGIN();
@@ -171,5 +288,9 @@ int main()
     RUN_TEST(test_mul_b_uint_arr_both_last_first);
     RUN_TEST(test_mul_b_uint_arr_overflow);
     RUN_TEST(test_mul_b_uint_arr_overflow_double);
+    RUN_TEST(test_mul_b_dec);
+    RUN_TEST(test_mul_b_dec_prec);
+    RUN_TEST(test_mul_b_dec_large);
+    RUN_TEST(test_mul_b_dec_trailing);
     return UNITY_END();
 }

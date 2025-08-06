@@ -2,6 +2,7 @@
 #include "b_dec_split.h"
 #include "b_dec_zero.h"
 #include "b_dec_compare.h"
+#include "b_dec_shift.h"
 
 int remove_trailing_zeroes(b_uint *a, b_uint *prec_ref, const size_t size)
 {
@@ -12,9 +13,9 @@ int remove_trailing_zeroes(b_uint *a, b_uint *prec_ref, const size_t size)
     }
 
     // remove complete zeros
-    while (a[size - 1] == 0 && prec > (BITSIZE - 1))
+    while (a[size - 1] == 0 && prec > BITSIZE)
     {
-        prec -= (BITSIZE - 1);
+        prec -= BITSIZE;
         for (size_t i = CHUNKSIZE - 1; i > 0; i--)
         {
             a[i] = a[i - 1];
@@ -30,22 +31,8 @@ int remove_trailing_zeroes(b_uint *a, b_uint *prec_ref, const size_t size)
         bits_to_shift++;
     }
 
-    b_uint first_half, last_half;
-    const long long last = (long long)(size - 1);
-    for (long long i = last; i >= 0; i--)
-    {
-        first_half = 0;
-        last_half = 0;
-        split_at(a[i], bits_to_shift, &first_half, &last_half);
-        a[i] >>= bits_to_shift;
-        if (i == last)
-        {
-            continue;
-        }
-
-        a[i + 1] |= (last_half << (BITSIZE - bits_to_shift));
-    }
-
+    shift_arr_right(a, a, size, bits_to_shift);
+    (*prec_ref) = prec;
     return 0;
 }
 

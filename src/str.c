@@ -1,4 +1,7 @@
 #include "b_dec_str.h"
+#include "b_dec_div_10.h"
+#include "b_dec_copy.h"
+#include "b_dec_compare.h"
 
 int bring_forward(char *str, const size_t size)
 {
@@ -105,36 +108,29 @@ int b_dec_to_str(const b_dec dec, char *str, const size_t size)
     b_uint prec = dec.prec;
     int precision_reached = dec.prec == 0 ? 1 : 0;
 
-    for (int i = CHUNKSIZE - 1; i >= 0; i--)
+    b_dec quotient;
+    copy(dec, &quotient);
+
+    for (uint8_t  remainder = 0; !is_zero_b_dec(quotient) && str_i < size - 1; str_i++)
     {
-        uint64_t quotient = (uint64_t)(dec.mag[i]);
-        uint64_t remainder = 0;
-
-        for (; quotient > 0 && str_i < size - 1; str_i++)
+        if (prec == 0 && !precision_reached)
         {
-            if (prec == 0 && !precision_reached)
-            {
-                precision_reached = 1;
-                put_from_last(str, size, str_i, '.');
-                str_i++;
-            }
-            else if (prec > 0)
-            {
-                prec--;
-            }
-
-            uint64_t q = quotient / 10;
-            uint64_t r = quotient - (q * 10);
-
-            quotient = q;
-            remainder = r;
-            put_from_last(str, size, str_i, char_map[remainder]);
+            precision_reached = 1;
+            put_from_last(str, size, str_i, '.');
+            str_i++;
+        }
+        else if (prec > 0)
+        {
+            prec--;
         }
 
-        if (quotient > 0)
-        {
-            return 1; // Error: buffer too small or overflow
-        }
+        div_10_b_dec(quotient, &quotient, &remainder);
+        put_from_last(str, size, str_i, char_map[remainder]);
+    }
+
+    if (!is_zero_b_dec(quotient))
+    {
+        return 1; // Error: buffer too small or overflow
     }
 
     // If precision is not reached, fill the rest with zeros
