@@ -57,6 +57,13 @@ $(BUILD_DIR)/unity.o:
 	@cat $<.log
 	@grep "0 Failures" $<.log > /dev/null || exit 1
 
+
+%_test_debug: $(BUILD_DIR)/%_test.o $(BUILD_DIR)/unity.o $(OBJS)
+	@echo "Running single test..."
+	$(CC) -g $< $(BUILD_DIR)/unity.o $(OBJS) -o ./build/debug.exe $(LDFLAGS)
+	@echo "Created debug executable for $<"
+
+
 %_test.exe: $(BUILD_DIR)/%_test.o $(BUILD_DIR)/unity.o $(OBJS)
 	@echo "Running single test..."
 	$(CC) $< $(BUILD_DIR)/unity.o $(OBJS) -o $(TEST_TARGET) $(LDFLAGS)
