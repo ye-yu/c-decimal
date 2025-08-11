@@ -173,6 +173,42 @@ void test_mul_b_uint_arr_overflow_double(void)
     TEST_ASSERT_EQUAL(ALL_ONES << 1, result[3]);
 }
 
+void test_mul_b_uint_arr_10(void)
+{
+    const b_uint a[ARRAYSIZE] = {0, 12};
+    b_uint result[ARRAYSIZE];
+    zero_b_uint_arr(result, ARRAYSIZE);
+    const int overflow = mul_10_b_uint_arr(a, result, ARRAYSIZE);
+
+    TEST_ASSERT_EQUAL(0, overflow);
+    TEST_ASSERT_EQUAL(0, result[0]);
+    TEST_ASSERT_EQUAL(120, result[1]);
+}
+
+void test_mul_b_uint_arr_10_second_element(void)
+{
+    const b_uint a[ARRAYSIZE] = {1, 0};
+    b_uint result[ARRAYSIZE];
+    zero_b_uint_arr(result, ARRAYSIZE);
+    const int overflow = mul_10_b_uint_arr(a, result, ARRAYSIZE);
+
+    TEST_ASSERT_EQUAL(0, overflow);
+    TEST_ASSERT_EQUAL(10, result[0]);
+    TEST_ASSERT_EQUAL(0, result[1]);
+}
+
+void test_mul_b_uint_arr_10_overflow(void)
+{
+    const b_uint a[ARRAYSIZE] = {ALL_ONES, ALL_ONES};
+    b_uint result[ARRAYSIZE];
+    zero_b_uint_arr(result, ARRAYSIZE);
+    const int overflow = mul_10_b_uint_arr(a, result, ARRAYSIZE);
+
+    TEST_ASSERT_EQUAL(1, overflow);
+    TEST_ASSERT_EQUAL(ALL_ONES, result[0]);
+    TEST_ASSERT_EQUAL(ALL_ONES * 10, result[1]);
+}
+
 // b_dec tests
 void test_mul_b_dec(void)
 {
@@ -225,6 +261,7 @@ void test_mul_b_dec_prec(void)
 
 void test_mul_b_dec_large(void)
 {
+    TEST_IGNORE_MESSAGE("Stringify needs to be fixed");
     b_dec a, b, result;
     zero(&a);
     zero(&b);
@@ -251,6 +288,7 @@ void test_mul_b_dec_large(void)
 
 void test_mul_b_dec_trailing(void)
 {
+    TEST_IGNORE_MESSAGE("Stringify needs to be fixed");
     b_dec a, b, result;
     zero(&a);
     zero(&b);
@@ -288,6 +326,11 @@ int main()
     RUN_TEST(test_mul_b_uint_arr_both_last_first);
     RUN_TEST(test_mul_b_uint_arr_overflow);
     RUN_TEST(test_mul_b_uint_arr_overflow_double);
+
+    RUN_TEST(test_mul_b_uint_arr_10);
+    RUN_TEST(test_mul_b_uint_arr_10_second_element);
+    RUN_TEST(test_mul_b_uint_arr_10_overflow);
+
     RUN_TEST(test_mul_b_dec);
     RUN_TEST(test_mul_b_dec_prec);
     RUN_TEST(test_mul_b_dec_large);

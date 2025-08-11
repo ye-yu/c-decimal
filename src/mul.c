@@ -6,6 +6,7 @@
 #include "b_dec_copy.h"
 #include "b_dec_add.h"
 #include "b_dec_trailing.h"
+#include "b_dec_shift.h"
 
 /**
  * @param a First operand, normalized
@@ -34,8 +35,10 @@ int mul_b_dec(const b_dec a, const b_dec b, b_dec *r)
 
 int mul_10_b_dec(const b_dec num, b_dec *result)
 {
-    static const b_dec _10 = {.mag = {10}, .sign = 0, .prec = 0};
-    return mul_b_dec(num, _10, result);
+    zero(result);
+    result->sign = num.sign; // sign remains the same
+    result->prec = num.prec; // precision remains
+    return mul_10_b_uint_arr(num.mag, result->mag, CHUNKSIZE);
 }
 
 int mul_b_uint(const b_uint a, const b_uint b, b_uint *r)
@@ -105,8 +108,8 @@ int mul_b_uint_arr(const b_uint *arr_a, const b_uint *arr_b, b_uint *r, const si
 
 int mul_10_b_uint_arr(const b_uint *arr_a, b_uint *r, const size_t size)
 {
-    b_uint *result = (b_uint *)malloc(size * sizeof(b_uint));
-    b_uint *_10 = (b_uint *)malloc(size * sizeof(b_uint));
+    b_uint *operand1 = (b_uint *)malloc(size * sizeof(b_uint));
+    b_uint *operand2 = (b_uint *)malloc(size * sizeof(b_uint));
 #define MAYBE_FREE(v) \
     do                \
     {                 \
@@ -116,27 +119,31 @@ int mul_10_b_uint_arr(const b_uint *arr_a, b_uint *r, const size_t size)
         }             \
     } while (0);
 
-    if (!result || !_10)
+    if (!operand1 || !operand2)
     {
-        MAYBE_FREE(result);
-        MAYBE_FREE(_10);
+        MAYBE_FREE(operand1);
+        MAYBE_FREE(operand2);
         return 1; // error: memory allocation failed
     }
-
-    zero_b_uint_arr(result, size);
-    zero_b_uint_arr(_10, size);
-    _10[size - 1] = 10; // Initialize the first element to 10, rest are zero
 
 #define RETURN_AFTER_FREE(v) \
     do                       \
     { /* free here */        \
-        free(result);        \
-        free(_10);           \
+        free(operand1);      \
+        free(operand2);      \
         return v;            \
     } while (0);
 
-    int overflow = mul_b_uint_arr(arr_a, _10, result, size);
-    copy_b_uint_arr(result, r, size);
+    zero_b_uint_arr(operand1, size);
+    zero_b_uint_arr(operand2, size);
+
+    shift_arr_left(arr_a, operand1, size, 1); // Shift left by 1
+    shift_arr_left(arr_a, operand2, size, 3); // Shift left by 1
+
+    int add_overflow = add_b_uint_arr(operand1, operand2, r, size);     // Add the two shifted values
+    int overflow = add_overflow || (arr_a[0] >> (BITSIZE - 3)) ? 1 : 0; // Check for overflow
 
     RETURN_AFTER_FREE(overflow);
+#undef MAYBE_FRE
+#undef RETURN_AFTER_FREE
 }
