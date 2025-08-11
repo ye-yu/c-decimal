@@ -62,15 +62,12 @@ int shift_arr_left(const b_uint *operand, b_uint *result, size_t size, size_t bi
     for (size_t i = 0; i < size; i++)
     {
         first_half = 0;
-        last_half = 0;
-        split_at(result[i], bits_to_shift, &first_half, &last_half);
+        split_at(result[i], BITSIZE - bits_to_shift, &first_half, &last_half);
         result[i] <<= bits_to_shift;
-        if (i == 0)
+        if (i != 0)
         {
-            continue;
+            result[i - 1] |= first_half;
         }
-
-        result[i - 1] |= (first_half >> (BITSIZE - bits_to_shift));
     }
     return 0;
 }
