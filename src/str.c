@@ -2,6 +2,7 @@
 #include "b_dec_div_10.h"
 #include "b_dec_copy.h"
 #include "b_dec_compare.h"
+#include "b_dec_split.h"
 
 int bring_forward(char *str, const size_t size)
 {
@@ -89,76 +90,65 @@ int b_uint_to_str(const b_uint dec, char *str, const size_t size)
  */
 int b_dec_to_str(const b_dec dec, char *str, const size_t size)
 {
-
-#define CHECK_BUFFER_OR_RETURN \
-    do                         \
-    {                          \
-        if (str_i >= size - 1) \
-        {                      \
-            return 1;          \
-        }                      \
-    } while (0)
-
-    for (size_t i = 0; i < size; i++)
+#define STR_SIZE (BITSIZE * CHUNKSIZE)
+    char integral_buffer[STR_SIZE] = "";   // Initialize the string buffer
+    char fractional_buffer[STR_SIZE] = ""; // Initialize the string buffer
+    for (size_t i = 0; i < STR_SIZE; i++)
     {
-        str[i] = '\0'; // Initialize the string buffer
+        integral_buffer[i] = '\0';
+        fractional_buffer[i] = '\0';
+    }
+
+    b_uint integral[CHUNKSIZE];
+    b_uint fractional[CHUNKSIZE];
+
+    if (dec.prec < BITSIZE * CHUNKSIZE)
+    {
+        int split_error = split_arr_at(dec.mag, dec.prec, integral, fractional, CHUNKSIZE);
+        if (split_error)
+            return 1;
+    }
+    else
+    {
+        copy_b_uint_arr(dec.mag, fractional, CHUNKSIZE);
     }
 
     size_t str_i = 0;
-    b_uint prec = dec.prec;
-    int precision_reached = dec.prec == 0 ? 1 : 0;
-
-    b_dec quotient;
-    copy(dec, &quotient);
-
-    for (uint8_t  remainder = 0; !is_zero_b_dec(quotient) && str_i < size - 1; str_i++)
-    {
-        if (prec == 0 && !precision_reached)
-        {
-            precision_reached = 1;
-            put_from_last(str, size, str_i, '.');
-            str_i++;
-        }
-        else if (prec > 0)
-        {
-            prec--;
-        }
-
-        div_10_b_dec(quotient, &quotient, &remainder);
-        put_from_last(str, size, str_i, char_map[remainder]);
-    }
-
-    if (!is_zero_b_dec(quotient))
-    {
-        return 1; // Error: buffer too small or overflow
-    }
-
-    // If precision is not reached, fill the rest with zeros
-    while (prec > 0 && str_i < size - 1)
-    {
-        put_from_last(str, size, str_i, '0');
-        str_i++;
-        prec--;
-    }
-
-    if (!precision_reached)
-    {
-
-        CHECK_BUFFER_OR_RETURN;
-        put_from_last(str, size, str_i, '.');
-        str_i++;
-
-        CHECK_BUFFER_OR_RETURN;
-        put_from_last(str, size, str_i, '0');
-        str_i++;
-    }
+#define APPEND_TO_END(c)       \
+    do                         \
+    {                          \
+        if (str_i >= size - 2) \
+            break;             \
+        str[str_i] = c;        \
+        str[str_i + 1] = '\0'; \
+        str_i++;               \
+    } while (0)
 
     if (dec.sign)
     {
-        CHECK_BUFFER_OR_RETURN;
-        put_from_last(str, size, str_i, '-');
+        APPEND_TO_END('-');
     }
 
-    bring_forward(str, size);
-    return 0;
+    // handle integral part
+    size_t integral_str_i = 0;
+    while (!is_zero_b_uint_arr(integral, CHUNKSIZE))
+    {
+        uint8_t remainder = 0;
+        div_10_b_uint_arr(integral, integral, &remainder, CHUNKSIZE);
+        if (integral_str_i >= STR_SIZE - 2)
+            continue;
+        size_t integral_str_i_last = STR_SIZE - integral_str_i - 2;
+        integral_buffer[integral_str_i_last] = char_map[remainder];
+        integral_str_i++;
+    }
+    bring_forward(integral_buffer, STR_SIZE);
+    for (size_t i = 0; i < STR_SIZE - 2 && integral_buffer[i] != '\0'; i++)
+    {
+        APPEND_TO_END(integral_buffer[i]);
+    }
+
+    // handle fractional part
+    b_uint prec = dec.prec;
+    // WIP
+    return 1;
 }
