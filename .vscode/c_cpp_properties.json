@@ -4,7 +4,7 @@
             "name": "GCC",
             "includePath": [
                 "${workspaceFolder}/include/**",
-                "${workspaceFolder}/tests/unity/src/**"
+                "${workspaceFolder}/tests/unity/src"
             ],
             "intelliSenseMode": "${default}",
             "compilerPath": "C:/msys64/ucrt64/bin/gcc.exe",
