@@ -19,6 +19,7 @@ typedef struct _b_dec
 {
     // sign: 0 for positive, 1 for negative
     uint8_t sign;
+    // precision for base 2, remember to convert!
     b_uint prec;
     b_uint mag[CHUNKSIZE];
 } b_dec;
