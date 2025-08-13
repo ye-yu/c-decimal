@@ -3,6 +3,10 @@
 #include "b_dec_copy.h"
 #include "b_dec_compare.h"
 #include "b_dec_split.h"
+#include "b_dec_shift.h"
+#include "b_dec_mul.h"
+#include "b_dec_zero.h"
+#include <string.h>
 
 int bring_forward(char *str, const size_t size)
 {
@@ -90,38 +94,59 @@ int b_uint_to_str(const b_uint dec, char *str, const size_t size)
  */
 int b_dec_to_str(const b_dec dec, char *str, const size_t size)
 {
+    if (dec.prec > MAX_PREC)
+    {
+        strcpy_s(str, size, MAX_PREC_MSG);
+        return 1;
+    }
 #define STR_SIZE (BITSIZE * CHUNKSIZE)
-    char integral_buffer[STR_SIZE] = "";   // Initialize the string buffer
-    char fractional_buffer[STR_SIZE] = ""; // Initialize the string buffer
+    char integral_buffer[STR_SIZE] = ""; // Initialize the string buffer
     for (size_t i = 0; i < STR_SIZE; i++)
     {
         integral_buffer[i] = '\0';
-        fractional_buffer[i] = '\0';
     }
 
     b_uint integral[CHUNKSIZE];
-    b_uint fractional[CHUNKSIZE];
+    b_uint fractional[CHUNKSIZE + 1];
 
     if (dec.prec < BITSIZE * CHUNKSIZE)
     {
         int split_error = split_arr_at(dec.mag, dec.prec, integral, fractional, CHUNKSIZE);
         if (split_error)
+        {
             return 1;
+        }
     }
     else
     {
         copy_b_uint_arr(dec.mag, fractional, CHUNKSIZE);
     }
 
+    // move fractional one to the right
+    for (size_t i = 0; i < CHUNKSIZE; i++)
+    {
+        size_t last = CHUNKSIZE - i - 1;
+        fractional[last + 1] = fractional[last];
+    }
+    fractional[0] = 0;
+
     size_t str_i = 0;
 #define APPEND_TO_END(c)       \
     do                         \
     {                          \
         if (str_i >= size - 2) \
+        {                      \
             break;             \
+        }                      \
         str[str_i] = c;        \
         str[str_i + 1] = '\0'; \
         str_i++;               \
+    } while (0)
+
+#define RETURN_STR_CHECK                  \
+    do                                    \
+    {                                     \
+        return str_i >= size - 2 ? 1 : 0; \
     } while (0)
 
     if (dec.sign)
@@ -147,8 +172,68 @@ int b_dec_to_str(const b_dec dec, char *str, const size_t size)
         APPEND_TO_END(integral_buffer[i]);
     }
 
+    if (is_zero_b_uint_arr(fractional, CHUNKSIZE + 1))
+    {
+        RETURN_STR_CHECK;
+    }
+
+    APPEND_TO_END('.');
+
     // handle fractional part
     b_uint prec = dec.prec;
-    // WIP
-    return 1;
+    // shift left the fractional to head of index 1
+    size_t bits_to_shift = BITSIZE * CHUNKSIZE - prec;
+    shift_arr_left(fractional, fractional, CHUNKSIZE + 1, bits_to_shift);
+
+    // buffers
+
+    b_uint *operand1 = (b_uint *)malloc((CHUNKSIZE + 1) * sizeof(b_uint));
+    b_uint *operand2 = (b_uint *)malloc((CHUNKSIZE + 1) * sizeof(b_uint));
+#define MAYBE_FREE(v) \
+    do                \
+    {                 \
+        if (v)        \
+        {             \
+            free(v);  \
+        }             \
+    } while (0);
+
+    if (!operand1 || !operand2)
+    {
+        MAYBE_FREE(operand1);
+        MAYBE_FREE(operand2);
+        return 1; // error: memory allocation failed
+    }
+
+    zero_b_uint_arr(operand1, CHUNKSIZE + 1);
+    zero_b_uint_arr(operand2, CHUNKSIZE + 1);
+
+#define RETURN_AFTER_FREE(v) \
+    do                       \
+    { /* free here */        \
+        free(operand1);      \
+        free(operand2);      \
+        return v;            \
+    } while (0);
+
+    while (!is_zero_b_uint_arr(fractional, CHUNKSIZE + 1))
+    {
+        int overflow = mul_10_b_uint_arr_no_malloc(fractional, fractional, operand1, operand2, CHUNKSIZE + 1);
+        if (overflow)
+        {
+            return 1;
+        }
+        uint8_t c = (uint8_t)fractional[0];
+        fractional[0] = 0;
+        if (c < 10)
+        {
+            APPEND_TO_END(char_map[c]);
+        }
+        else
+        {
+            APPEND_TO_END('?');
+        }
+    }
+
+    RETURN_STR_CHECK;
 }
