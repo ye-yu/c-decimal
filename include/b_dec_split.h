@@ -24,7 +24,7 @@ b_uint first_half(const r_uint comp);
  * Last half = 0001 1010
 
  */
-int split_at(b_uint a, size_t at, b_uint *first_half, b_uint *last_half);
+int split_at(const b_uint a, size_t at, b_uint *first_half, b_uint *last_half);
 
 /**
  * Splits a b_uint at a specified bit position.
@@ -46,4 +46,4 @@ int split_at(b_uint a, size_t at, b_uint *first_half, b_uint *last_half);
  * Last half = 0001 1010
 
  */
-int split_arr_at(b_uint *a, size_t at_from_behind, b_uint *first_half, b_uint *last_half, size_t size);
+int split_arr_at(const b_uint *a, size_t at_from_behind, b_uint *first_half, b_uint *last_half, size_t size);

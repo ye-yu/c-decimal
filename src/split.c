@@ -11,7 +11,7 @@ b_uint first_half(const r_uint comp)
     return last_half(comp >> BITSIZE);
 }
 
-int split_at(b_uint a, size_t at, b_uint *first_half, b_uint *last_half)
+int split_at(const b_uint a, size_t at, b_uint *first_half, b_uint *last_half)
 {
     if (at >= BITSIZE)
     {
@@ -22,7 +22,7 @@ int split_at(b_uint a, size_t at, b_uint *first_half, b_uint *last_half)
     return 0;
 }
 
-int split_arr_at(b_uint *a, const size_t at_from_behind, b_uint *first_half_arr, b_uint *last_half_arr, size_t size)
+int split_arr_at(const b_uint *a, const size_t at_from_behind, b_uint *first_half_arr, b_uint *last_half_arr, size_t size)
 {
     if (at_from_behind >= BITSIZE * size)
     {
