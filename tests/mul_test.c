@@ -261,7 +261,6 @@ void test_mul_b_dec_prec(void)
 
 void test_mul_b_dec_large(void)
 {
-    TEST_IGNORE_MESSAGE("Stringify needs to be fixed");
     b_dec a, b, result;
     zero(&a);
     zero(&b);
@@ -278,17 +277,16 @@ void test_mul_b_dec_large(void)
     print_multiply_result(a, b, result);
 
     // compare by str, python says 25769803829 * 0.5
-    // 12884901914.5
+    // 64424509572.5
     char str[STR_SIZE];
     b_dec_to_str(result, str, STR_SIZE);
 
     TEST_ASSERT_EQUAL(0, overflow);
-    TEST_ASSERT_EQUAL_STRING("12884901914.5", str);
+    TEST_ASSERT_EQUAL_STRING("64424509572.5", str);
 }
 
 void test_mul_b_dec_trailing(void)
 {
-    TEST_IGNORE_MESSAGE("Stringify needs to be fixed");
     b_dec a, b, result;
     zero(&a);
     zero(&b);
@@ -304,13 +302,13 @@ void test_mul_b_dec_trailing(void)
     const int overflow = mul_b_dec(a, b, &result);
     print_multiply_result(a, b, result);
 
-    // compare by str, python says 257698.03829 * 1280
-    // 329853489.0112
+    // compare by str, python says 805306369.65625 * 1280
+    // 1030792153160
     char str[STR_SIZE];
     b_dec_to_str(result, str, STR_SIZE);
 
     TEST_ASSERT_EQUAL(0, overflow);
-    TEST_ASSERT_EQUAL_STRING("329853489.0112", str);
+    TEST_ASSERT_EQUAL_STRING("1030792153160", str);
 }
 
 int main()

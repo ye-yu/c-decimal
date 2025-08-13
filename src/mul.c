@@ -134,6 +134,14 @@ int mul_10_b_uint_arr(const b_uint *arr_a, b_uint *r, const size_t size)
         return v;            \
     } while (0);
 
+    int overflow = mul_10_b_uint_arr_no_malloc(arr_a, r, operand1, operand2, size);
+    RETURN_AFTER_FREE(overflow);
+#undef MAYBE_FRE
+#undef RETURN_AFTER_FREE
+}
+
+int mul_10_b_uint_arr_no_malloc(const b_uint *arr_a, b_uint *r, b_uint *operand1, b_uint *operand2, const size_t size)
+{
     zero_b_uint_arr(operand1, size);
     zero_b_uint_arr(operand2, size);
 
@@ -143,7 +151,5 @@ int mul_10_b_uint_arr(const b_uint *arr_a, b_uint *r, const size_t size)
     int add_overflow = add_b_uint_arr(operand1, operand2, r, size);     // Add the two shifted values
     int overflow = add_overflow || (arr_a[0] >> (BITSIZE - 3)) ? 1 : 0; // Check for overflow
 
-    RETURN_AFTER_FREE(overflow);
-#undef MAYBE_FRE
-#undef RETURN_AFTER_FREE
+    return overflow;
 }

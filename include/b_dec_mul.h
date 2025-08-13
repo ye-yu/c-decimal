@@ -12,3 +12,5 @@ int mul_b_uint_arr(const b_uint *arr_a, const b_uint *arr_b, b_uint *r, const si
 
 // multiply by shift and add
 int mul_10_b_uint_arr(const b_uint *arr_a, b_uint *r, const size_t size);
+
+int mul_10_b_uint_arr_no_malloc(const b_uint *arr_a, b_uint *r, b_uint *operand1, b_uint *operand2, const size_t size);
