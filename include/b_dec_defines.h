@@ -8,6 +8,8 @@
 #define CHUNKSIZE 4
 #define CHUNKSIZE_DOUBLE 8
 #define BITSIZE 32
+#define MAX_PREC 32
+#define MAX_PREC_MSG "<exceeded MAX_PREC:32>"
 #define b_uint uint32_t
 #define r_uint uint64_t
 #define ONE ((b_uint)1)
