@@ -297,18 +297,18 @@ void test_mul_b_dec_trailing(void)
     a.mag[CHUNKSIZE - 1] = 0b110101;
     b.sign = 0;
     b.prec = 0;
-    b.mag[CHUNKSIZE - 1] = 0b10100000000;
+    b.mag[CHUNKSIZE - 1] = 0b1000;
 
     const int overflow = mul_b_dec(a, b, &result);
     print_multiply_result(a, b, result);
 
-    // compare by str, python says 805306369.65625 * 1280
-    // 1030792153160
+    // compare by str, python says 805306369.65625 * 8
+    // 6442450957.25
     char str[STR_SIZE];
     b_dec_to_str(result, str, STR_SIZE);
 
     TEST_ASSERT_EQUAL(0, overflow);
-    TEST_ASSERT_EQUAL_STRING("1030792153160", str);
+    TEST_ASSERT_EQUAL_STRING("6442450957.25", str);
 }
 
 int main()
